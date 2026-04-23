@@ -739,6 +739,23 @@ body.scrolling .motion-blur { filter: blur(0.8px); }
 .pm-mc-nm{display:block;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:.9rem;color:#f0eeff;margin-bottom:2px}
 .pm-mc-ds{font-size:.74rem;color:#6b5e8a}
 .pm-mc-arr{margin-left:auto;color:#6b5e8a;font-size:1.2rem;flex-shrink:0}
+/* Order form */
+.pm-form-group{margin-bottom:14px}
+.pm-form-label{display:block;font-size:.75rem;font-weight:700;color:#a855f7;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.pm-form-input,.pm-form-select{width:100%;background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.25);border-radius:10px;padding:11px 14px;color:#f0eeff;font-size:.88rem;font-family:'Plus Jakarta Sans',sans-serif;outline:none;box-sizing:border-box;-webkit-appearance:none;appearance:none}
+.pm-form-input:focus,.pm-form-select:focus{border-color:rgba(168,85,247,.7);background:rgba(168,85,247,.12)}
+.pm-form-select option{background:#13102a;color:#f0eeff}
+.pm-form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pm-submit{width:100%;padding:13px;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;border-radius:12px;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;margin-top:6px;letter-spacing:.04em;transition:opacity .2s}
+.pm-submit:hover{opacity:.88}
+.pm-submit:disabled{opacity:.5;cursor:not-allowed}
+.pm-order-summary{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:.82rem;color:#c084fc}
+.pm-order-summary strong{color:#f0eeff}
+.pm-sending{text-align:center;padding:20px 0;color:#a855f7;font-size:.85rem}
+.pm-success{text-align:center;padding:16px 0}
+.pm-success-icon{font-size:2.5rem;margin-bottom:10px}
+.pm-success h3{color:#f0eeff;margin-bottom:6px}
+.pm-success p{color:#6b5e8a;font-size:.82rem}
 
 /* back */
 .pm-bk{
@@ -986,7 +1003,7 @@ body.scrolling .motion-blur { filter: blur(0.8px); }
 
   <div class="disclaimer reveal d2">
     <span class="disclaimer-icon">⚠️</span>
-    <span><strong>Please note:</strong> Tier boosting is not 100% guaranteed. We maintain a <strong>95% success rate</strong> across all gamemodes. In the rare case a boost is unsuccessful, we will reattempt at no extra charge — or issue a full refund.</span>
+    <span><strong>Please note:</strong> Tier boosting is not 100% guaranteed. We maintain a <strong>95% success rate</strong> across all gamemodes. Results may vary based on server conditions and competition.</span>
   </div>
 
   <div class="pricing-tabs reveal d3">
@@ -1102,7 +1119,7 @@ body.scrolling .motion-blur { filter: blur(0.8px); }
     <div class="step reveal d4">
       <div class="step-num">03</div>
       <div class="step-title">Enjoy Your Rank</div>
-      <p class="step-desc">Boost complete. Your account is handed back with the new tier — or we retry free if we miss the target.</p>
+      <p class="step-desc">Boost complete. Your account is handed back with the new tier achieved.</p>
     </div>
   </div>
 </section>
@@ -1128,17 +1145,24 @@ body.scrolling .motion-blur { filter: blur(0.8px); }
       </div>
     </div>
     <div class="pay-card reveal d2 motion-blur">
+      <div class="pay-icon" style="font-size:1.4rem">⬡</div>
+      <div>
+        <div class="pay-name">Ethereum (ETH)</div>
+        <div class="pay-sub">Send via MetaMask or any ETH wallet — fast and secure</div>
+      </div>
+    </div>
+    <div class="pay-card reveal d3 motion-blur">
+      <div class="pay-icon" style="font-size:1.4rem">◎</div>
+      <div>
+        <div class="pay-name">Solana (SOL)</div>
+        <div class="pay-sub">Ultra-low fees, near-instant — great for quick payments</div>
+      </div>
+    </div>
+    <div class="pay-card reveal d4 motion-blur">
       <div class="pay-icon">📱</div>
       <div>
         <div class="pay-name">Google Pay (INR)</div>
         <div class="pay-sub">Instant UPI transfers via GPay — India only</div>
-      </div>
-    </div>
-    <div class="pay-card reveal d3 motion-blur" style="border-style:dashed;opacity:.6;">
-      <div class="pay-icon">💬</div>
-      <div>
-        <div class="pay-name">Other Methods?</div>
-        <div class="pay-sub">DM us on Discord — we'll work something out</div>
       </div>
     </div>
   </div>
@@ -1155,7 +1179,7 @@ body.scrolling .motion-blur { filter: blur(0.8px); }
     </div>
     <div class="faq-item reveal d1">
       <div class="faq-q">Is the boost 100% guaranteed? <span class="faq-icon">+</span></div>
-      <div class="faq-a">No boost service can promise 100% results — Minecraft PvP is live and competitive. We hold a 95% success rate. If your boost fails, we reattempt for free or issue a full refund. No questions asked.</div>
+      <div class="faq-a">No boost service can promise 100% results — Minecraft PvP is live and competitive. We hold a 95% success rate. Results depend on server conditions and competition level.</div>
     </div>
     <div class="faq-item reveal d2">
       <div class="faq-q">How long does a boost take? <span class="faq-icon">+</span></div>
@@ -1337,8 +1361,10 @@ setTimeout(() => {
       <p class="pm-sb">Select your preferred cryptocurrency, then scan the QR or copy the address.</p>
 
       <div class="pm-coins">
-        <button class="pm-coin sel" id="coin-btc" onclick="pmCoin('btc')">₿ Bitcoin (BTC)</button>
-        <button class="pm-coin" id="coin-ltc" onclick="pmCoin('ltc')">Ł Litecoin (LTC)</button>
+        <button class="pm-coin sel" id="coin-btc" onclick="pmCoin('btc')">₿ BTC</button>
+        <button class="pm-coin" id="coin-ltc" onclick="pmCoin('ltc')">Ł LTC</button>
+        <button class="pm-coin" id="coin-eth" onclick="pmCoin('eth')">⬡ ETH</button>
+        <button class="pm-coin" id="coin-sol" onclick="pmCoin('sol')">◎ SOL</button>
       </div>
 
       <div class="pm-tabs">
@@ -1364,6 +1390,26 @@ setTimeout(() => {
       <div id="ltc-adrp" class="pm-addr-pane">
         <div class="pm-addr-box">LYH5XYq1uKLys5DoMmP8eWpZY7LrpDkED3</div>
         <button class="pm-cp" id="ltc-cp" onclick="pmCopy('ltc-cp','LYH5XYq1uKLys5DoMmP8eWpZY7LrpDkED3','Wallet Address')">📋 Copy LTC Address</button>
+      </div>
+
+      <!-- ETH panes -->
+      <div id="eth-qrp" class="pm-qr-pane">
+        <div id="eth-qr-canvas" style="background:#fff;padding:10px;border-radius:12px;display:inline-block;margin:0 auto"></div>
+        <p class="pm-qr-h">Scan with your Ethereum wallet app</p>
+      </div>
+      <div id="eth-adrp" class="pm-addr-pane">
+        <div class="pm-addr-box">0x115d0c86725afaC12A6431C6Ef5C94774229bCD1</div>
+        <button class="pm-cp" id="eth-cp" onclick="pmCopy('eth-cp','0x115d0c86725afaC12A6431C6Ef5C94774229bCD1','Wallet Address')">📋 Copy ETH Address</button>
+      </div>
+
+      <!-- SOL panes -->
+      <div id="sol-qrp" class="pm-qr-pane">
+        <div id="sol-qr-canvas" style="background:#fff;padding:10px;border-radius:12px;display:inline-block;margin:0 auto"></div>
+        <p class="pm-qr-h">Scan with your Solana wallet app</p>
+      </div>
+      <div id="sol-adrp" class="pm-addr-pane">
+        <div class="pm-addr-box">CbdbG2QmicfF1gXtdGZ9ytpEiMhPPiPjRfrkgUPhgB25</div>
+        <button class="pm-cp" id="sol-cp" onclick="pmCopy('sol-cp','CbdbG2QmicfF1gXtdGZ9ytpEiMhPPiPjRfrkgUPhgB25','Wallet Address')">📋 Copy SOL Address</button>
       </div>
 
       <div class="pm-sum" id="cry-sum">
@@ -1436,16 +1482,25 @@ document.querySelectorAll('.tier-btn').forEach(function(b){
 function pmCoin(coin) {
   _activeCoin = coin;
   // toggle selector
-  ['btc','ltc'].forEach(function(c) {
+  ['btc','ltc','eth','sol'].forEach(function(c) {
     document.getElementById('coin-'+c).classList.toggle('sel', c===coin);
   });
   // show correct panes based on current tab
   pmCryTab(_cryTab);
   // update summary
-  var names = {btc:'Bitcoin (BTC)', ltc:'Litecoin (LTC)'};
-  var addrs = {btc:'bc1qdk0hs5g5s9ff0f8yu6thlwcsxfglsfe2xt7ese', ltc:'LYH5XYq1uKLys5DoMmP8eWpZY7LrpDkED3'};
+  var names = {btc:'Bitcoin (BTC)', ltc:'Litecoin (LTC)', eth:'Ethereum (ETH)', sol:'Solana (SOL)'};
+  var addrs = {btc:'bc1qdk0hs5g5s9ff0f8yu6thlwcsxfglsfe2xt7ese', ltc:'LYH5XYq1uKLys5DoMmP8eWpZY7LrpDkED3', eth:'0x115d0c86725afaC12A6431C6Ef5C94774229bCD1', sol:'CbdbG2QmicfF1gXtdGZ9ytpEiMhPPiPjRfrkgUPhgB25'};
   document.getElementById('cry-sum-coin').textContent = names[coin];
   document.getElementById('cry-sum-addr').textContent = addrs[coin].substring(0,18)+'…';
+  // generate QR if needed
+  if ((coin==='eth'||coin==='sol') && !document.getElementById(coin+'-qr-canvas').hasChildNodes()) {
+    new QRCode(document.getElementById(coin+'-qr-canvas'), {
+      text: addrs[coin],
+      width: 180, height: 180,
+      colorDark: '#000000', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
 }
 
 function pmCryTab(tab) {
@@ -1453,7 +1508,7 @@ function pmCryTab(tab) {
   document.getElementById('cry-tqr').classList.toggle('on', tab==='qr');
   document.getElementById('cry-tadr').classList.toggle('on', tab==='addr');
   // hide all crypto panes first
-  ['btc-qrp','btc-adrp','ltc-qrp','ltc-adrp'].forEach(function(id){
+  ['btc-qrp','btc-adrp','ltc-qrp','ltc-adrp','eth-qrp','eth-adrp','sol-qrp','sol-adrp'].forEach(function(id){
     var el = document.getElementById(id);
     el.classList.remove('on');
   });
@@ -1481,5 +1536,6 @@ function pmCopy(btnId, text, label) {
 }
 </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </body>
 </html>
