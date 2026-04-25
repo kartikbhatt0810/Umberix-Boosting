@@ -852,8 +852,324 @@ body.scrolling .motion-blur { filter: blur(0.8px); }
 /* ════════════════════════════════════════ */
 
 </style>
+<style>
+/* ═══════════════════════════════════════
+   ASTRAL FRONTIER — PRELOADER
+═══════════════════════════════════════ */
+#astr-loader {
+  position: fixed; inset: 0; z-index: 99999;
+  background: #04020d;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  transition: opacity 1s cubic-bezier(.77,0,.18,1), visibility 1s;
+}
+#astr-loader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+
+/* Star canvas behind everything */
+#astr-canvas { position: absolute; inset: 0; }
+
+/* Warp tunnel rings */
+.astr-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(168,85,247,0);
+  transform: scale(0);
+  animation: ringExpand var(--d) cubic-bezier(.2,.8,.4,1) var(--dl) infinite;
+}
+@keyframes ringExpand {
+  0%   { transform: scale(0);   opacity: .9; border-color: rgba(168,85,247,.7); }
+  100% { transform: scale(4);   opacity: 0;  border-color: rgba(224,64,251,0); }
+}
+
+/* Nebula glow blobs */
+.astr-nebula {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px);
+  animation: nebulaDrift var(--d) ease-in-out var(--dl) infinite alternate;
+}
+@keyframes nebulaDrift {
+  0%   { transform: translate(0,0) scale(1); }
+  100% { transform: translate(var(--tx),var(--ty)) scale(1.2); }
+}
+
+/* Center galaxy spiral SVG */
+#astr-galaxy {
+  position: absolute;
+  width: 380px; height: 380px;
+  animation: galaxySpin 12s linear infinite;
+  opacity: .35;
+}
+@keyframes galaxySpin { to { transform: rotate(360deg); } }
+
+/* Logo reveal */
+.astr-logo-wrap {
+  position: relative; z-index: 10;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 16px;
+}
+.astr-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.4rem, 8vw, 4rem);
+  letter-spacing: .18em;
+  color: transparent;
+  background: linear-gradient(135deg, #f0eeff 20%, #c084fc 60%, #e040fb 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: none;
+  opacity: 0;
+  transform: translateY(30px) scale(.92);
+  animation: titleReveal 1.2s cubic-bezier(.16,1,.3,1) 0.6s forwards;
+}
+@keyframes titleReveal {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Glitch flicker on title */
+.astr-title.glitch {
+  animation: titleReveal 1.2s cubic-bezier(.16,1,.3,1) 0.6s forwards,
+             glitch 4s steps(1) 2s infinite;
+}
+@keyframes glitch {
+  0%,96%,100% { clip-path: none; transform: none; }
+  97% { clip-path: polygon(0 20%,100% 20%,100% 40%,0 40%); transform: translate(-3px,2px); }
+  98% { clip-path: polygon(0 60%,100% 60%,100% 80%,0 80%); transform: translate(3px,-2px); }
+  99% { clip-path: none; transform: translate(0); }
+}
+
+.astr-sub {
+  font-size: .72rem; font-weight: 700; letter-spacing: .25em;
+  text-transform: uppercase; color: rgba(168,85,247,.8);
+  opacity: 0; transform: translateY(12px);
+  animation: fadeUp .8s ease 1.4s forwards;
+}
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+/* Horizontal warp lines */
+.astr-warp {
+  position: absolute; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(168,85,247,.6) 40%,
+              rgba(224,64,251,.8) 50%, rgba(168,85,247,.6) 60%, transparent 100%);
+  opacity: 0;
+  animation: warpLine 1s ease var(--dl) forwards;
+}
+@keyframes warpLine {
+  0%   { opacity:0; transform: scaleX(0); }
+  50%  { opacity:1; transform: scaleX(1); }
+  100% { opacity:0; transform: scaleX(1.2); }
+}
+
+/* Progress */
+.astr-prog-wrap {
+  position: absolute; bottom: 60px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  z-index: 10;
+}
+.astr-prog-bar {
+  width: 200px; height: 1px;
+  background: rgba(168,85,247,.15);
+  position: relative; overflow: hidden;
+}
+.astr-prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg,#7c3aed,#a855f7,#e040fb);
+  box-shadow: 0 0 12px rgba(168,85,247,1);
+  width: 0%;
+  transition: width .15s linear;
+}
+.astr-prog-pct {
+  font-size: .65rem; font-weight: 700; letter-spacing: .2em;
+  color: rgba(168,85,247,.5);
+}
+
+/* Corner scan brackets */
+.astr-brk {
+  position: absolute; width: 28px; height: 28px;
+  border-color: rgba(168,85,247,.4); border-style: solid;
+  opacity: 0; animation: brktIn .5s ease 1s forwards;
+}
+@keyframes brktIn { to { opacity: 1; } }
+.astr-brk.tl{top:20px;left:20px;border-width:1px 0 0 1px}
+.astr-brk.tr{top:20px;right:20px;border-width:1px 1px 0 0}
+.astr-brk.bl{bottom:20px;left:20px;border-width:0 0 1px 1px}
+.astr-brk.br{bottom:20px;right:20px;border-width:0 1px 1px 0}
+
+/* Shooting stars */
+.astr-shoot {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  opacity: 0;
+  animation: shoot var(--d) ease var(--dl) infinite;
+}
+@keyframes shoot {
+  0%   { opacity:0; transform: translate(0,0); }
+  5%   { opacity:1; }
+  100% { opacity:0; transform: translate(var(--tx),var(--ty)); }
+}
+.astr-shoot::after {
+  content:''; position:absolute; top:50%; right:2px;
+  width: 80px; height: 1px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.6));
+}
+</style>
 </head>
 <body>
+
+<!-- ═══════ ASTRAL FRONTIER PRELOADER ═══════ -->
+<div id="astr-loader">
+  <!-- Star field canvas -->
+  <canvas id="astr-canvas"></canvas>
+
+  <!-- Nebula blobs -->
+  <div class="astr-nebula" style="width:500px;height:500px;top:-10%;left:-15%;background:radial-gradient(circle,rgba(124,58,237,.18) 0%,transparent 70%);--d:8s;--dl:0s;--tx:40px;--ty:30px"></div>
+  <div class="astr-nebula" style="width:400px;height:400px;bottom:-10%;right:-10%;background:radial-gradient(circle,rgba(224,64,251,.14) 0%,transparent 70%);--d:10s;--dl:1s;--tx:-30px;--ty:-40px"></div>
+  <div class="astr-nebula" style="width:300px;height:300px;top:30%;right:10%;background:radial-gradient(circle,rgba(168,85,247,.12) 0%,transparent 70%);--d:7s;--dl:2s;--tx:-20px;--ty:20px"></div>
+
+  <!-- Galaxy SVG spiral -->
+  <svg id="astr-galaxy" viewBox="0 0 380 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M190 190 Q220 120 280 100 Q340 80 360 140 Q380 200 340 240 Q300 280 240 270 Q180 260 150 220 Q120 180 140 140 Q160 100 200 90 Q240 80 260 110" stroke="url(#g1)" stroke-width="1.5" fill="none" opacity=".8"/>
+    <path d="M190 190 Q160 260 100 280 Q40 300 20 240 Q0 180 40 140 Q80 100 140 110 Q200 120 230 160 Q260 200 240 240 Q220 280 180 290 Q140 300 120 270" stroke="url(#g2)" stroke-width="1.5" fill="none" opacity=".8"/>
+    <path d="M190 190 Q260 200 300 250 Q340 300 310 350 Q280 390 230 370" stroke="url(#g3)" stroke-width="1" fill="none" opacity=".5"/>
+    <path d="M190 190 Q120 180 80 130 Q40 80 70 30 Q100 -10 150 10" stroke="url(#g3)" stroke-width="1" fill="none" opacity=".5"/>
+    <circle cx="190" cy="190" r="4" fill="#e040fb" opacity=".9"/>
+    <circle cx="190" cy="190" r="12" stroke="#a855f7" stroke-width="1" fill="none" opacity=".4"/>
+    <circle cx="190" cy="190" r="24" stroke="#7c3aed" stroke-width=".5" fill="none" opacity=".25"/>
+    <defs>
+      <linearGradient id="g1" x1="190" y1="100" x2="360" y2="240" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#a855f7"/><stop offset="1" stop-color="#e040fb" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="g2" x1="190" y1="280" x2="20" y2="140" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#7c3aed"/><stop offset="1" stop-color="#c084fc" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="g3" x1="190" y1="190" x2="310" y2="370" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#e040fb"/><stop offset="1" stop-color="#a855f7" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- Warp tunnel rings -->
+  <div class="astr-ring" style="width:300px;height:300px;--d:3s;--dl:0s"></div>
+  <div class="astr-ring" style="width:300px;height:300px;--d:3s;--dl:1s"></div>
+  <div class="astr-ring" style="width:300px;height:300px;--d:3s;--dl:2s"></div>
+
+  <!-- Warp lines -->
+  <div class="astr-warp" style="top:35%;--dl:.2s"></div>
+  <div class="astr-warp" style="top:50%;--dl:.4s"></div>
+  <div class="astr-warp" style="top:65%;--dl:.6s"></div>
+
+  <!-- Shooting stars -->
+  <div class="astr-shoot" style="top:20%;left:80%;--d:4s;--dl:0.5s;--tx:-600px;--ty:300px"></div>
+  <div class="astr-shoot" style="top:10%;left:90%;--d:5s;--dl:2s;--tx:-700px;--ty:200px"></div>
+  <div class="astr-shoot" style="top:30%;left:85%;--d:3.5s;--dl:3.5s;--tx:-500px;--ty:400px"></div>
+  <div class="astr-shoot" style="top:5%;left:70%;--d:6s;--dl:1s;--tx:-650px;--ty:350px"></div>
+
+  <!-- Logo -->
+  <div class="astr-logo-wrap">
+    <div class="astr-title glitch">Umberix&nbsp;<span style="color:#c084fc">Boosting</span></div>
+    <div class="astr-sub">• Minecraft PvP Boosting •</div>
+  </div>
+
+  <!-- Corner brackets -->
+  <div class="astr-brk tl"></div>
+  <div class="astr-brk tr"></div>
+  <div class="astr-brk bl"></div>
+  <div class="astr-brk br"></div>
+
+  <!-- Progress -->
+  <div class="astr-prog-wrap">
+    <div class="astr-prog-bar"><div class="astr-prog-fill" id="astrFill"></div></div>
+    <div class="astr-prog-pct" id="astrPct">INITIALIZING</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ── Star field ── */
+  var cv = document.getElementById('astr-canvas');
+  var ctx = cv.getContext('2d');
+  var stars = [];
+  var W, H, cx, cy;
+
+  function resize(){
+    W = cv.width  = window.innerWidth;
+    H = cv.height = window.innerHeight;
+    cx = W/2; cy = H/2;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Spawn stars
+  for(var i=0;i<220;i++){
+    stars.push({
+      x: Math.random()*W, y: Math.random()*H,
+      z: Math.random()*W,
+      pz: 0
+    });
+  }
+
+  var speed = 2;
+  function drawStars(){
+    ctx.fillStyle = 'rgba(4,2,13,0.25)';
+    ctx.fillRect(0,0,W,H);
+    speed = Math.min(speed + 0.04, 18);
+
+    for(var i=0;i<stars.length;i++){
+      var s = stars[i];
+      s.pz = s.z;
+      s.z -= speed;
+      if(s.z <= 0){
+        s.x = (Math.random()-0.5)*W + cx;
+        s.y = (Math.random()-0.5)*H + cy;
+        s.z = W; s.pz = s.z;
+      }
+      var sx = (s.x - cx) * (W/s.z) + cx;
+      var sy = (s.y - cy) * (W/s.z) + cy;
+      var px = (s.x - cx) * (W/s.pz) + cx;
+      var py = (s.y - cy) * (W/s.pz) + cy;
+      var size = Math.max(0.3, (1 - s.z/W) * 2.5);
+      var bright = 1 - s.z/W;
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.lineTo(sx, sy);
+      ctx.strokeStyle = 'rgba('+
+        Math.round(180+60*bright)+','+
+        Math.round(160+80*bright)+','+
+        Math.round(255)+','+bright+')';
+      ctx.lineWidth = size;
+      ctx.stroke();
+    }
+    requestAnimationFrame(drawStars);
+  }
+  drawStars();
+
+  /* ── Progress counter ── */
+  var fill = document.getElementById('astrFill');
+  var pct  = document.getElementById('astrPct');
+  var labels = ['INITIALIZING','CONNECTING','LOADING ASSETS','LAUNCHING'];
+  var n = 0;
+  var interval = setInterval(function(){
+    n = Math.min(n + Math.random()*7 + 1, 99);
+    fill.style.width = n + '%';
+    pct.textContent = labels[Math.floor(n/25)] + '  ' + Math.floor(n) + '%';
+    if(n >= 99) clearInterval(interval);
+  }, 80);
+
+  /* ── Hide on load ── */
+  window.addEventListener('load', function(){
+    setTimeout(function(){
+      fill.style.width = '100%';
+      pct.textContent = 'LAUNCH  100%';
+      setTimeout(function(){
+        document.getElementById('astr-loader').classList.add('done');
+      }, 600);
+    }, 500);
+  });
+})();
+</script>
+
 
 <div id="scrollBar"></div>
 
